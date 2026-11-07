@@ -1,0 +1,30 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAuthenticated() { return request.auth != null; }
+    function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
+
+    // Vehicle listing photos: public read (they're shown on public listings),
+    // but only the signed-in owner can upload into their own folder.
+    match /vehicles/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId) &&
+        request.resource.size < 8 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+
+    // ID verification documents: private — only the owner and backend admin
+    // code (which uses the Admin SDK and bypasses these rules) can read them.
+    match /verifications/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) &&
+        request.resource.size < 8 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+
+    // Everything else stays locked down by default.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

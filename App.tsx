@@ -1236,6 +1236,16 @@ export const App: React.FC = () => {
       );
   }
 
+  // Signed in with Google but the profile is still being created/loaded: show a loader instead of crashing
+  if (!currentUser) {
+      return (
+          <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 text-gray-600">
+              <div className="w-10 h-10 border-4 border-gray-300 border-t-red-600 rounded-full animate-spin mb-4"></div>
+              <p className="text-sm font-semibold">Setting up your account...</p>
+          </div>
+      );
+  }
+
   return (
     <div className={`min-h-screen font-sans text-gray-900 pb-28 md:pb-32 bg-transparent selection:bg-red-200 selection:text-red-900 ${getFontClass(currentLanguage)}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <Navbar 

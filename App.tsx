@@ -1208,7 +1208,7 @@ export const App: React.FC = () => {
 
     const meta = getVehicleBiddingMeta(v);
     const isOwner = Boolean(currentUser?.id && v.ownerId === currentUser.id);
-    const hasBid = meta.participantIds.includes(currentUser.id) || userBidVehicleIds.includes(v.id);
+    const hasBid = (Boolean(currentUser?.id) && meta.participantIds.includes(currentUser!.id)) || userBidVehicleIds.includes(v.id);
 
     if (archiveFilter === 'listings') return isOwner;
     if (archiveFilter === 'bids') return hasBid;
